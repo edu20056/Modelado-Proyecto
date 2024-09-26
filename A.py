@@ -6,6 +6,7 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.utils import get_color_from_hex
+from kivy.graphics import Color, Rectangle
 import os
 
 kivy.require('2.0.0')
@@ -34,16 +35,22 @@ def verificar_usuario(nombre, carnet):
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        
+
         # Usar FloatLayout para posiciones absolutas
         layout = FloatLayout()
+
+        # Establecer el fondo de color #26eaff
+        with layout.canvas.before:
+            Color(0.149, 0.918, 1.0, 1.0) # Color #26eaff en formato RGB
+            Rectangle(pos=(0,0), size=(10000, 10000))  # Usa el tamaño del layout
+
 
         # Cuadro de texto para Nombre
         self.name_input = TextInput(
             hint_text="Nombre", 
             font_size=18, 
             size_hint=(0.6, 0.1), 
-            pos_hint={"x": 0.2, "y": 0.7}  # Control exacto de la posición
+            pos_hint={"x": 0.2, "y": 0.7}
         )
 
         # Cuadro de texto para Carné
@@ -51,7 +58,7 @@ class MainScreen(Screen):
             hint_text="Carné", 
             font_size=18, 
             size_hint=(0.6, 0.1), 
-            pos_hint={"x": 0.2, "y": 0.55}  # Control exacto de la posición
+            pos_hint={"x": 0.2, "y": 0.55}
         )
 
         # Botón Continuar
@@ -59,8 +66,8 @@ class MainScreen(Screen):
             text="Continuar", 
             font_size=24, 
             size_hint=(0.4, 0.1), 
-            pos_hint={"x": 0.1, "y": 0.35},  # Posición en la parte izquierda
-            background_color=get_color_from_hex("#4CAF50")  # Verde (#4CAF50)
+            pos_hint={"x": 0.3, "y": 0.35},  
+            background_color=get_color_from_hex("#5dc3eb")
         )
 
         # Botón Crear cuenta
@@ -68,10 +75,18 @@ class MainScreen(Screen):
             text="Crear cuenta", 
             font_size=24, 
             size_hint=(0.4, 0.1), 
-            pos_hint={"x": 0.5, "y": 0.35},  # Posición en la parte derecha
-            background_color=get_color_from_hex("#2196F3")  # Azul (#2196F3)
+            pos_hint={"x": 0.3, "y": 0.20},  
+            background_color=get_color_from_hex("#5dc3eb")
         )
 
+        # Botón Olvidé Mi Contreaseña
+        create_forgot_pass_button = Button(
+            text="Olvidé mi contraseña", 
+            font_size=24, 
+            size_hint=(0.4, 0.1), 
+            pos_hint={"x": 0.3, "y": 0.05},  
+            background_color=(0.149, 0.918, 1.0, 1.0)
+        )
         # Vincular eventos
         continue_button.bind(on_press=self.login)
         create_account_button.bind(on_press=self.go_to_create_account)
@@ -81,8 +96,10 @@ class MainScreen(Screen):
         layout.add_widget(self.carnet_input)
         layout.add_widget(continue_button)
         layout.add_widget(create_account_button)
+        layout.add_widget(create_forgot_pass_button)
 
         self.add_widget(layout)
+
 
     def login(self, instance):
         nombre = self.name_input.text
@@ -104,6 +121,11 @@ class CreateAccountScreen(Screen):
         
         # Usar FloatLayout para control de posiciones
         layout = FloatLayout()
+
+        # Establecer el fondo blanco
+        with layout.canvas.before:
+            Color(1, 1, 1, 1)  # Color blanco (RGB: 1,1,1, Alpha: 1)
+            Rectangle(pos=(0,0), size=(10000, 10000))
 
         self.name_input = TextInput(
             hint_text="Nombre", 
@@ -145,6 +167,11 @@ class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
         layout = FloatLayout()
+
+        # Establecer el fondo blanco
+        with layout.canvas.before:
+            Color(1, 1, 1, 1)  # Color blanco (RGB: 1,1,1, Alpha: 1)
+            Rectangle(pos=(0,0), size=(10000, 10000))
 
         rent_button = Button(
             text="Arrendar casa", 
