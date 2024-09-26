@@ -3,8 +3,9 @@ from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
-from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.utils import get_color_from_hex
 import os
 
 kivy.require('2.0.0')
@@ -29,39 +30,101 @@ def verificar_usuario(nombre, carnet):
                 return True
     return False
 
-# Pantalla principal con botones "Iniciar sesión" y "Crear cuenta"
+# Pantalla principal con campos de texto para iniciar sesión y botones "Continuar" y "Crear cuenta"
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+        
+        # Usar FloatLayout para posiciones absolutas
+        layout = FloatLayout()
 
-        login_button = Button(text="Iniciar sesión", font_size=24, size_hint=(1, 0.3))
-        create_account_button = Button(text="Crear cuenta", font_size=24, size_hint=(1, 0.3))
+        # Cuadro de texto para Nombre
+        self.name_input = TextInput(
+            hint_text="Nombre", 
+            font_size=18, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.7}  # Control exacto de la posición
+        )
 
-        login_button.bind(on_press=self.go_to_login)
+        # Cuadro de texto para Carné
+        self.carnet_input = TextInput(
+            hint_text="Carné", 
+            font_size=18, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.55}  # Control exacto de la posición
+        )
+
+        # Botón Continuar
+        continue_button = Button(
+            text="Continuar", 
+            font_size=24, 
+            size_hint=(0.4, 0.1), 
+            pos_hint={"x": 0.1, "y": 0.35},  # Posición en la parte izquierda
+            background_color=get_color_from_hex("#4CAF50")  # Verde (#4CAF50)
+        )
+
+        # Botón Crear cuenta
+        create_account_button = Button(
+            text="Crear cuenta", 
+            font_size=24, 
+            size_hint=(0.4, 0.1), 
+            pos_hint={"x": 0.5, "y": 0.35},  # Posición en la parte derecha
+            background_color=get_color_from_hex("#2196F3")  # Azul (#2196F3)
+        )
+
+        # Vincular eventos
+        continue_button.bind(on_press=self.login)
         create_account_button.bind(on_press=self.go_to_create_account)
 
-        layout.add_widget(login_button)
+        # Añadir widgets al layout principal
+        layout.add_widget(self.name_input)
+        layout.add_widget(self.carnet_input)
+        layout.add_widget(continue_button)
         layout.add_widget(create_account_button)
 
         self.add_widget(layout)
 
-    def go_to_login(self, instance):
-        self.manager.current = 'login_screen'
+    def login(self, instance):
+        nombre = self.name_input.text
+        carnet = self.carnet_input.text
+        if verificar_usuario(nombre, carnet):
+            print(f"Bienvenido {nombre}")
+            self.manager.current = 'menu_screen'
+        else:
+            print("Usuario no encontrado o datos incorrectos")
 
     def go_to_create_account(self, instance):
         self.manager.current = 'create_account_screen'
+
 
 # Pantalla de creación de cuenta
 class CreateAccountScreen(Screen):
     def __init__(self, **kwargs):
         super(CreateAccountScreen, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+        
+        # Usar FloatLayout para control de posiciones
+        layout = FloatLayout()
 
-        self.name_input = TextInput(hint_text="Nombre", font_size=18, size_hint=(1, 0.2), multiline=False)
-        self.carnet_input = TextInput(hint_text="Carné", font_size=18, size_hint=(1, 0.2), multiline=False)
+        self.name_input = TextInput(
+            hint_text="Nombre", 
+            font_size=18, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.7}  # Posicionar los elementos
+        )
+        self.carnet_input = TextInput(
+            hint_text="Carné", 
+            font_size=18, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.55}
+        )
 
-        submit_button = Button(text="Enviar", font_size=24, size_hint=(1, 0.3))
+        submit_button = Button(
+            text="Enviar", 
+            font_size=24, 
+            size_hint=(0.4, 0.1), 
+            pos_hint={"x": 0.3, "y": 0.35},  # Centrar el botón
+            background_color=get_color_from_hex("#F44336")  # Rojo
+        )
         submit_button.bind(on_press=self.submit_account)
 
         layout.add_widget(self.name_input)
@@ -77,42 +140,33 @@ class CreateAccountScreen(Screen):
         print(f"Usuario guardado: {nombre}/{carnet}")
         self.manager.current = 'main_screen'
 
-# Pantalla de inicio de sesión
-class LoginScreen(Screen):
-    def __init__(self, **kwargs):
-        super(LoginScreen, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
-
-        self.name_input = TextInput(hint_text="Nombre", font_size=18, size_hint=(1, 0.2), multiline=False)
-        self.carnet_input = TextInput(hint_text="Carné", font_size=18, size_hint=(1, 0.2), multiline=False)
-
-        login_button = Button(text="Iniciar sesión", font_size=24, size_hint=(1, 0.3))
-        login_button.bind(on_press=self.login)
-
-        layout.add_widget(self.name_input)
-        layout.add_widget(self.carnet_input)
-        layout.add_widget(login_button)
-
-        self.add_widget(layout)
-
-    def login(self, instance):
-        nombre = self.name_input.text
-        carnet = self.carnet_input.text
-        if verificar_usuario(nombre, carnet):
-            print(f"Bienvenido {nombre}")
-            self.manager.current = 'menu_screen'
-        else:
-            print("Usuario no encontrado o datos incorrectos")
-
 # Pantalla con las opciones "Arrendar casa", "Perfil", "Buscar casa"
 class MenuScreen(Screen):
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
-        layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
+        layout = FloatLayout()
 
-        rent_button = Button(text="Arrendar casa", font_size=24, size_hint=(1, 0.3))
-        profile_button = Button(text="Perfil", font_size=24, size_hint=(1, 0.3))
-        search_button = Button(text="Buscar casa", font_size=24, size_hint=(1, 0.3))
+        rent_button = Button(
+            text="Arrendar casa", 
+            font_size=24, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.7},  # Control de posición
+            background_color=get_color_from_hex("#FF9800")  # Naranja
+        )
+        profile_button = Button(
+            text="Perfil", 
+            font_size=24, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.55},  # Control de posición
+            background_color=get_color_from_hex("#03A9F4")  # Azul claro
+        )
+        search_button = Button(
+            text="Buscar casa", 
+            font_size=24, 
+            size_hint=(0.6, 0.1), 
+            pos_hint={"x": 0.2, "y": 0.4},  # Control de posición
+            background_color=get_color_from_hex("#8BC34A")  # Verde claro
+        )
 
         layout.add_widget(rent_button)
         layout.add_widget(profile_button)
@@ -130,7 +184,6 @@ class MyApp(App):
         sm = MyScreenManager()
         sm.add_widget(MainScreen(name='main_screen'))
         sm.add_widget(CreateAccountScreen(name='create_account_screen'))
-        sm.add_widget(LoginScreen(name='login_screen'))
         sm.add_widget(MenuScreen(name='menu_screen'))
 
         return sm
